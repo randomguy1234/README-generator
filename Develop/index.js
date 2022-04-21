@@ -5,16 +5,22 @@ const generateMarkdown= require('./utils/generateMarkdown');
 
 
 // main array of questions for user input
-const questions= ['What is the name of your project?', 'What description do you have for your project?',
-'Do you need a table of contents?', 'Are installation instructions necessary?', 
-'Is there anything to add in terms of how to use the project?', 'Are there any licenses?',
-'What is your contribution guideline?', 'Are there any tests for your project?'];
+const mainQuestions= ['What is the name of your project?', 'What description do you have for your project?', 
+'What are the installition instructions?','Do you have any screenshots/demo videos of the project?', 
+'Who is responsible for making the project?', 'Are there any licenses?'];
 
-//array of followup questions
-const questions2= ['Please select all relevant info for the table of contents.', 
-'What are the installition instructions?','Please add the usage info here.', 
-'What licenses does this project have/need?', 
-'Please describe the tests needed for the project and how to implement them.'];
+//array of optional questions
+const optQuestions= ['Do you want to enter a table of contents?', 
+,'Do you have any badges to add to the project?', 'Does the project have a lot of features?', 
+'Do you want other developers to support your project?', 'Are there any tests for the project?'];
+
+//array of followup responses to some questions
+const moreQuestions= [ 
+'Please give a short description as well as the path to the screenshot/demo video link.',
+'Please enter your licences.',
+'Please enter the table of contents', 'Please enter your badges.', 
+'Can you describe the features the project has?',
+ 'How would you like other developers to support your project?', 'What tests do your project have?'];
 
 // TODO: Create a function to write README file
 //remember to later call the function or move it elsewhere
@@ -24,16 +30,14 @@ function writeToFile(fileName, data)
 }
 
 //function to initialize app and store readme sections
-function init() 
+function initSetup() 
 {
-    return inquirer.prompt
-    ([
+    return inquirer.prompt([
         {
             type: 'input',
-            name: 'Title',
-            message: questions[0],
-            //needs validation
-            validate: titleInput =>
+            name: 'title',
+            message: mainQuestions[0],
+            validate: titleInput => //checks for empty string
             {
                 if (!titleInput)
                 {
@@ -47,136 +51,180 @@ function init()
 
         {
             type: 'input',
-            name: 'Description',
-            message: questions[1]  
+            name: 'description',
+            message: mainQuestions[1],
+            validate: descInput => //checks for empty string
+            {
+                if (!descInput)
+                {
+                    console.log('Please enter the description of the Project');
+                    return false;
+                }
+
+                return true;
+            }  
+        },
+
+        {
+            type: 'input',
+            name: 'installation',
+            message: mainQuestions[2],
+                       
         },
 
         {
             type: 'confirm',
-            name: 'Contents',
-            message: questions[2],
-            //needs followup prompt            
-        },
-
-        {
-            //create option so that only selected choices are filled with details
-            type: 'checkbox',
-            name: 'contentsItems',
-            message: questions2[0],
-            choices: ['Installation','Usage', 'Licenses', 'Contribution', 'Tests'],
-            when: ({Contents}) =>
-            {
-                if (Contents)
-                {
-                    return true;
-                }
-
-                return false;
-            }
+            name: 'demo',
+            message: mainQuestions[3]
             
         },
 
         {
-            type: 'confirm',
-            name: 'Installation',
-            message: questions[3]
-            //needs followup prompt
-        },
-
-        {
             type: 'input',
-            name: 'installationInfo',
-            message: questions2[1],
-            when: ({Installation}) =>
+            name: 'demoInfo',
+            message: moreQuestions[0],
+            when: ({Demo}) =>
             {
-                if (Installation)
-                {
+                if (Demo)
                     return true;
-                }
-
+                
                 return false;
             }
         },
 
         {
-            type: 'confirm',
-            name: 'Usage',
-            message: questions[4]
-            //needs followup prompt
-        },
-
-        {
             type: 'input',
-            name: 'usageInfo',
-            message: questions2[2],
-            when: ({Usage}) =>
-            {
-                if (Usage)
-                {
-                    return true;
-                }
-
-                return false;
-            }
+            name: 'credits',
+            message: mainQuestions[4]
         },
 
         {
             type: 'confirm',
-            name: 'Licenses',
-            message: questions[5]
+            name: 'licenses',
+            message: mainQuestions[5]
             //needs followup prompt
         },
 
         {
             type: 'input',
             name: 'licensesInfo',
-            message: questions2[3],
-            when: ({Licenses}) =>
+            message: moreQuestions[1],
+            when: ({licenses}) =>
             {
-                if (Licenses)
-                {
+                if (licenses)
                     return true;
-                }
+                
+                return false;
+            }
+        },
+
+        {
+            type: 'confirm',
+            name: 'contents',
+            message: optQuestions[0]
+        },
+
+        {
+            type: 'input',
+            name: 'contentsInfo',
+            message: moreQuestions[2],
+            when: ({contents}) =>
+            {
+                if (contents)
+                    return true;
 
                 return false;
             }
         },
 
         {
+            type: 'confirm',
+            name: 'badges',
+            message: optQuestions[1]
+        },
+
+        {
             type: 'input',
-            name: 'Contribution',
-            message: questions[6]
+            name: 'badgesInfo',
+            message: moreQuestions[3],
+            when: ({badges}) =>
+            {
+                if (badges)
+                    return true;
+
+                return false;
+            }
+        },
+        
+        {
+            type: 'confirm',
+            name: 'features',
+            message: optQuestions[2]
+        },
+
+        {
+            type: 'input',
+            name: 'featuresInfo',
+            message: moreQuestions[4],
+            when: ({features}) =>
+            {
+                if (features)
+                    return true;
+
+                return false;
+            }
         },
 
         {
             type: 'confirm',
-            name: 'Tests',
-            message: questions[7]
-            //needs follup prompt
+            name: 'contribution',
+            message: optQuestions[3]
+        },
+
+        {
+            type: 'input',
+            name: 'contributionInfo',
+            message: moreQuestions[5],
+            when: ({contribution}) =>
+            {
+                if (contribution)
+                    return true;
+
+                return false;
+            }
+        },
+
+        {
+            type: 'confirm',
+            name: 'tests',
+            message: optQuestions[4]
+            //needs followup prompt
         },
 
         {
             type: 'input',
             name: 'testsInfo',
-            message: questions2[4],
-            when: ({Tests}) =>
+            message: moreQuestions[6],
+            when: ({tests}) =>
             {
-                if (Tests)
-                {
+                if (tests)
                     return true;
-                }
-
+                
                 return false;
             }
         }
-    ])
-    .then((answers) => 
-    {
-        console.log(answers);
-    });
+
+    ]);
 }
 
+
 // Function call to initialize app
-init();
+initSetup()
+    .then(blueprint => 
+        {
+            console.log(blueprint);
+            //generateMarkdown(blueprint);
+        });
+    
 
 //call to generate page below
