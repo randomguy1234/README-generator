@@ -5,14 +5,14 @@ const generateMarkdown= require('./utils/generateMarkdown');
 
 
 // main array of questions for user input
-const mainQuestions= ['What is the name of your project?', 'What description do you have for your project?', 
-'What are the installition instructions?','Do you have any screenshots/demo videos of the project?', 
-'Who is responsible for making the project?', 'Are there any licenses?'];
+const mainQuestions= ['What is the name of your project?(required)', 'What description do you have for your project?(required)', 
+'What are the installition instructions?(required)','Do you have any screenshots/demo videos of the project?', 
+'Who is responsible for making the project?(required)', 'Are there any licenses?'];
 
 //array of optional questions
-const optQuestions= ['Do you want to enter a table of contents?', 
-,'Do you have any badges to add to the project?', 'Does the project have a lot of features?', 
-'Do you want other developers to support your project?', 'Are there any tests for the project?'];
+const optQuestions= ['Do you want to enter a table of contents?(optional)', 
+'Do you have any badges to add to the project?(optional)', 'Does the project have a lot of features?(optional)', 
+'Do you want other developers to support your project?(optional)', 'Are there any tests for the project?(optional)'];
 
 //array of followup responses to some questions
 const moreQuestions= [ 
@@ -26,7 +26,11 @@ const moreQuestions= [
 //remember to later call the function or move it elsewhere
 function writeToFile(fileName, data) 
 {
-    
+    fs.writeFile(`./dist/${fileName}`, data, (err) => 
+    {
+        if (err) console.log(err);
+        console.log('The file has been created!');
+    });
 }
 
 //function to initialize app and store readme sections
@@ -223,8 +227,13 @@ initSetup()
     .then(blueprint => 
         {
             console.log(blueprint);
-            //generateMarkdown(blueprint);
+            return writeToFile('README.md', generateMarkdown(blueprint));
+        })
+    .catch(error =>
+        {
+            console.log(error);
         });
+       
     
 
 //call to generate page below
